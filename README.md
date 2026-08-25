@@ -1,5 +1,13 @@
 # Qwen3.8-27B on one RTX 3090
 
+> ### 🪟 On Windows? → **[INSTALL-WINDOWS.md](INSTALL-WINDOWS.md)**
+> This is a Windows/WSL2-friendly fork of
+> [syv-ai/qwen38-27b-rtx3090](https://github.com/syv-ai/qwen38-27b-rtx3090):
+> same int4 stack, one-command installer (`windows\install.ps1`), a Windows control
+> script, working KVarN 245k context, plus WSL2 fixes and fresh benchmarks
+> (DFlash2 **165 tok/s**, subagent concurrency, Qwen 3.6 vs 3.8). Everything below is
+> the upstream README, unchanged.
+
 ![Stock vLLM against this repo, same card, same prompts](docs/media/demo.gif)
 
 Serving setup for [Qwen3.8-27B](https://huggingface.co/Qwen/Qwen3.8-27B) on a
