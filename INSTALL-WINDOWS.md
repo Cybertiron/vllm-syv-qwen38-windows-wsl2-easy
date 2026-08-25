@@ -131,10 +131,14 @@ or in WSL:
 SPEC=dflash2 CTX=huge PREFIX_CACHE=1 VLLM_WSL2_ENABLE_PIN_MEMORY=1 bash single-user/start_qwen.sh
 ```
 
-Note: decode rate depends on how **full** the context is, not the max capacity —
-245k is *room* for long documents/chats, not a speed. Short prompts on the huge
-server still run ~110 tok/s; a filled 100k+ context is attention-bound (~single
-digits to ~20 tok/s), the same as any engine. See upstream `docs/long-context.md`.
+**Measured here (RTX 3090, GPU1):** the server boots with a **245,760-token KV
+pool** on a single 24 GB card — capacity verified, it really comes up. But decode
+rate depends on how **full** the context is, not the max capacity. At **~209k tokens
+filled**, prefill/TTFT is **~442 s (~7 min)** and decode runs **~12 tok/s**
+(attention-bound — the same for any engine at that length). Short prompts on the same
+huge server still run fast. So `245k` is **room** for a long document or chat, not a
+speed: use it when the request wouldn't otherwise fit, not to go faster. See upstream
+`docs/long-context.md`.
 
 ---
 

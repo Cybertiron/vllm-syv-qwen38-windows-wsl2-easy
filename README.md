@@ -42,7 +42,7 @@ OpenAI-compatible API at `http://localhost:18020/v1` (key in `api_key.txt`).
 |---|---|---|
 | stock vLLM, no speculation | ~46 | baseline |
 | **DFlash2** (default here) | **165** | **3.6×** faster, int4 |
-| KVarN `mode-huge` | — | **245k** token context on one 24 GB card |
+| KVarN `mode-huge` | 12 @ 209k filled | **245k**-token *capacity* on 24 GB (verified boot). Room for long docs — decode is slow once full: ~12 tok/s at 209k, prefill ~7 min |
 | 4 concurrent (subagents) | 289 aggregate | ~87 tok/s each, instant TTFT |
 
 Full numbers, VRAM notes, Qwen 3.6-vs-3.8, and the subagent concurrency table are in
