@@ -90,22 +90,27 @@ else
   skip "DFlash2 drafter present"
 fi
 
-# --- 5. apply vLLM patches (reverse-dry-run to stay idempotent) ------------
+# --- 5. apply vLLM patches (idempotent, never interactive) -----------------
+# -N --batch: on a re-run patch would otherwise prompt "Reversed ... Assume -R?"
+# and hang an unattended install. Forward dry-run first: applies cleanly => not
+# yet applied => apply; anything else (already applied / the DFlash2 pair that
+# can't be reversed individually) => skip.
 say "Applying vLLM patches"
 for p in patches/*.patch; do
-  if patch -p1 -R -d "$SP" --dry-run <"$p" >/dev/null 2>&1; then
-    skip "$(basename "$p") already applied"
+  if patch -p1 -N --batch -d "$SP" --dry-run <"$p" >/dev/null 2>&1; then
+    patch -p1 -N --batch -d "$SP" <"$p" >/dev/null && echo "    applied $(basename "$p")"
   else
-    patch -p1 -d "$SP" <"$p" && echo "    applied $(basename "$p")"
+    skip "$(basename "$p") already applied"
   fi
 done
 
 # --- 6. KVarN 4/2-bit KV cache (this is the 'kvern2' / CTX=huge path) ------
-if ! "$PY" -c "import vllm.model_executor.layers.kvarn" 2>/dev/null; then
+# Detection matches verify.sh: the backend file present == installed.
+if [ -f "$SP/v1/attention/backends/kvarn_attn.py" ]; then
+  skip "KVarN already installed"
+else
   say "Installing KVarN 4/2-bit KV cache (CTX=huge, 245k context + DFlash2)"
   bash kvarn/install.sh
-else
-  skip "KVarN already installed"
 fi
 
 # --- 7. api key ------------------------------------------------------------
