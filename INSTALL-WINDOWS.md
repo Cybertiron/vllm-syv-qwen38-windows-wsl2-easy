@@ -177,8 +177,21 @@ the parallel prefills). If each agent needs a bigger context, give the pool more
 
 Bigger pools mean slower decode once the context is actually full (KVarN section).
 
+**Do subagents benefit from DFlash2?** Yes, at this scale. A/B at 4 concurrent
+with ~15k context each:
+
+| 4 agents @ 15k | per-agent decode | aggregate |
+|---|---|---|
+| **DFlash2 ON** (default) | **43.5 tok/s** | 14.5 |
+| no speculation | 28.3 tok/s | 14.8 |
+
+DFlash2 gives each agent **+54% decode** — the GPU isn't compute-saturated at 4, so
+speculation still pays. Aggregate is a wash because both are prefill-bound at 15k, but
+per-agent latency (a subagent's responsiveness) is clearly better with the default on.
+
 Rule of thumb (from upstream too): speculation wins below ~8 concurrent; plain
-batching wins above.
+batching wins above. So keep the default DFlash2 for a handful of subagents; switch to
+`batch/start_qwen.sh` only when you run many at once.
 
 ---
 

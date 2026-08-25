@@ -53,9 +53,12 @@ All numbers below are measured on this fork's harness (same 2000-token generatio
 At `CTX=fast` the KV pool holds **~65k tokens total**, shared across concurrent
 requests — one stream gets the full 64k, but **4 subagents split it (~16k context
 each**, measured: 4/4 fit, ~42 tok/s decode each). For more context per agent launch
-`CTX=long` (~136k pool → ~34k each) or `CTX=huge` (~245k → ~60k each), slower. Many
-agents on short prompts scale to ~318 tok/s aggregate at 8 concurrent. Full tables:
-[INSTALL-WINDOWS.md](INSTALL-WINDOWS.md).
+`CTX=long` (~136k pool → ~34k each) or `CTX=huge` (~245k → ~60k each), slower.
+
+The default **DFlash2 helps subagents too**: at 4 concurrent with ~15k context each,
+per-agent decode is **43.5 tok/s with DFlash2 vs 28.3 without** (+54%). Keep it on for a
+handful of agents; use `batch/` mode only when running many at once (spec crosses over
+around 8 concurrent). Full tables: [INSTALL-WINDOWS.md](INSTALL-WINDOWS.md).
 
 Full numbers, VRAM notes, Qwen 3.6-vs-3.8, and the subagent concurrency table are in
 **[INSTALL-WINDOWS.md](INSTALL-WINDOWS.md)**.
