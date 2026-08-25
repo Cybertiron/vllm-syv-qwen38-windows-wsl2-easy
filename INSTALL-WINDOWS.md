@@ -144,6 +144,21 @@ huge server still run fast. So `245k` is **room** for a long document or chat, n
 speed: use it when the request wouldn't otherwise fit, not to go faster. See upstream
 `docs/long-context.md`.
 
+**KVarN vs bf16 KV, head-to-head at the same 64k** (DFlash2, same int4 weights — only
+the KV-cache dtype differs):
+
+| KV cache | decode, ~empty | decode, 40k filled | VRAM |
+|---|---|---|---|
+| **bf16** (`CTX=fast`) | **173 tok/s** | **73 tok/s** | 23.0 GB |
+| KVarN 4/2 (`CTX=huge`) | 162 | 53 | 23.6 GB |
+
+KVarN is **7–28 % slower** (the 4/2-bit dequant costs more the fuller the cache gets)
+and at 64k it uses slightly *more* VRAM, not less. Its win is density, not speed: it
+packs **~4× more tokens per GB** (~51k vs ~12k tok/GB), which is how it reaches 245k in
+the same ~5 GB KV budget where bf16 tops out near 65k. So: **use bf16 (`CTX=fast`) for
+≤64k — it is faster; reach for KVarN (`CTX=huge`) only when you actually need >64k**,
+and accept the slower decode. It's a capacity tool, not a speed or VRAM-saving one.
+
 ---
 
 ## Concurrency — how many subagents can you run?
