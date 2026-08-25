@@ -84,11 +84,15 @@ you on WSL2 that this fork handles for you:
 
 Single-stream decode, code prompt, measured **inside WSL** (no Windows streaming lag):
 
-| Config | tok/s | vs stock |
-|---|---|---|
-| stock vLLM, no speculation (upstream C1) | ~46 | 1.0× |
-| **MTP** (`num_speculative_tokens=6`) | 153 | 3.3× |
-| **DFlash2** (`SPEC=dflash2`, n=7) — **default here** | **165** | **3.6×** |
+| Config | tok/s | vs stock | context |
+|---|---|---|---|
+| **stock vLLM, no speculation** (measured here) | 36 | 1.0× | 64k |
+| **MTP** (`num_speculative_tokens=6`) | 153 | 4.2× | 64k |
+| **DFlash2** (`SPEC=dflash2`, n=7) — **default here** | **169** | **4.7×** | 64k |
+
+All at `CTX=fast` (64k KV pool), short/medium fill — decode slows as context fills
+(see KVarN section). "Optimized for speed" here means: int4 W4A16, DFlash2
+speculation, 64k context, single stream.
 
 - **Acceptance / draft quality** (DFlash2 n=7): mean acceptance length ~5.9 tokens/step,
   ~70% avg draft acceptance. Per-position acceptance falls off fast, so `n=7` is the
@@ -158,6 +162,20 @@ agent still ~87 tok/s, instant TTFT. You can push to 8 (318 aggregate) but per-a
 speed drops and TTFT climbs as requests queue against the 8-slot pool. For **many**
 agents, use `batch/start_qwen.sh` (up to ~1,035 tok/s at 64 concurrent, no
 speculation) or run a **second instance on a second GPU** for 2× capacity.
+
+**Context per subagent — they share one KV pool.** At `CTX=fast` the pool holds
+**~65k tokens *total*, split across concurrent requests** — not 64k *each*. One
+stream gets the full 64k; **4 subagents get ~16k context each** (measured: 4 agents
+with ~15k-token prompts all fit, ~42 tok/s decode each, ~14 tok/s aggregate including
+the parallel prefills). If each agent needs a bigger context, give the pool more room:
+
+| launch mode | KV pool | ~context per agent (4 agents) |
+|---|---|---|
+| `CTX=fast` (default) | ~65k | ~16k |
+| `CTX=long` | ~136k | ~34k |
+| `CTX=huge` (KVarN) | ~245k | ~60k |
+
+Bigger pools mean slower decode once the context is actually full (KVarN section).
 
 Rule of thumb (from upstream too): speculation wins below ~8 concurrent; plain
 batching wins above.

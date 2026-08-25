@@ -38,12 +38,24 @@ OpenAI-compatible API at `http://localhost:18020/v1` (key in `api_key.txt`).
 
 ## Why bother (measured on one RTX 3090, WSL2, greedy)
 
+All numbers below are measured on this fork's harness (same 2000-token generation,
+`CTX=fast` = 64k context, single RTX 3090), so they compare like-for-like:
+
 | | tok/s | note |
 |---|---|---|
-| stock vLLM, no speculation | ~46 | baseline |
-| **DFlash2** (default here) | **165** | **3.6×** faster, int4 |
+| stock vLLM, no speculation | 36 | baseline |
+| **DFlash2** (default here) | **169** | **4.7×** faster, int4, at 64k context |
 | KVarN `mode-huge` | 12 @ 209k filled | **245k**-token *capacity* on 24 GB (verified boot). Room for long docs — decode is slow once full: ~12 tok/s at 209k, prefill ~7 min |
-| 4 concurrent (subagents) | 289 aggregate | ~87 tok/s each, instant TTFT |
+| 4 concurrent (subagents) | ~87 each | short prompts; the 64k KV pool is **shared** — see [subagents](#subagents-and-context) |
+
+### Subagents and context
+
+At `CTX=fast` the KV pool holds **~65k tokens total**, shared across concurrent
+requests — one stream gets the full 64k, but **4 subagents split it (~16k context
+each**, measured: 4/4 fit, ~42 tok/s decode each). For more context per agent launch
+`CTX=long` (~136k pool → ~34k each) or `CTX=huge` (~245k → ~60k each), slower. Many
+agents on short prompts scale to ~318 tok/s aggregate at 8 concurrent. Full tables:
+[INSTALL-WINDOWS.md](INSTALL-WINDOWS.md).
 
 Full numbers, VRAM notes, Qwen 3.6-vs-3.8, and the subagent concurrency table are in
 **[INSTALL-WINDOWS.md](INSTALL-WINDOWS.md)**.
