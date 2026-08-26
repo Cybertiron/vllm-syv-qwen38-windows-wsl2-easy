@@ -60,6 +60,11 @@ per-agent decode is **43.5 tok/s with DFlash2 vs 28.3 without** (+54%). Keep it 
 handful of agents; use `batch/` mode only when running many at once (spec crosses over
 around 8 concurrent). Full tables: [INSTALL-WINDOWS.md](INSTALL-WINDOWS.md).
 
+Runnable orchestrator (stdlib only): **[examples/subagents.py](examples/subagents.py)** —
+fans out subagents in parallel, shares one brief via prefix caching, and a lead call
+synthesizes their outputs (the server serves independent completions; the orchestrator
+routes — subagents don't talk to each other).
+
 Full numbers, VRAM notes, Qwen 3.6-vs-3.8, and the subagent concurrency table are in
 **[INSTALL-WINDOWS.md](INSTALL-WINDOWS.md)**.
 
