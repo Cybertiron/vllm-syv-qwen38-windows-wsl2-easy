@@ -113,6 +113,19 @@ else
   bash kvarn/install.sh
 fi
 
+# --- 6b. Open WebUI (optional chat UI with saved history) -------------------
+# Its own venv (~/owui-venv, ~7 GB). Skip with OWUI=0. Launch later with
+# `windows\vllm.cmd webui` -> http://localhost:3000 (no login, keeps chat history).
+OWUI_VENV="$HOME/owui-venv"
+if [ "${OWUI:-1}" = "1" ] && [ ! -x "$OWUI_VENV/bin/open-webui" ]; then
+  say "Installing Open WebUI (chat UI + history) into $OWUI_VENV (~7 GB; OWUI=0 to skip)"
+  python3.12 -m venv "$OWUI_VENV"
+  "$OWUI_VENV/bin/pip" install --upgrade pip
+  "$OWUI_VENV/bin/pip" install open-webui
+else
+  skip "Open WebUI (present, or OWUI=0)"
+fi
+
 # --- 7. api key ------------------------------------------------------------
 [ -f "$REPO/api_key.txt" ] || openssl rand -hex 24 > "$REPO/api_key.txt"
 

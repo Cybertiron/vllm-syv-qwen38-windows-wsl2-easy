@@ -32,9 +32,13 @@ requantizes it, applies the vLLM patches + KVarN, and verifies. ~30–60 min.
 windows\vllm.cmd start        :: fastest single-user, ~165 tok/s, 64k context
 windows\vllm.cmd mode-huge    :: 245k context (KVarN)
 windows\vllm.cmd status
+windows\vllm.cmd webui        :: chat UI with saved history -> http://localhost:3000
 ```
 
 OpenAI-compatible API at `http://localhost:18020/v1` (key in `api_key.txt`).
+For a chat window that **remembers your history**, `vllm.cmd webui` runs
+[Open WebUI](https://github.com/open-webui/open-webui) at `http://localhost:3000`
+(no login; the installer sets it up unless you pass `OWUI=0`). Start the server first.
 
 ## Why bother (measured on one RTX 3090, WSL2, greedy)
 
