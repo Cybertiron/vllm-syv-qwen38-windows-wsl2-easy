@@ -85,3 +85,12 @@ DFlash2 drafters are [z-lab](https://github.com/z-lab/dflash) /
 [incoai](https://huggingface.co/incoai/Qwen3.8-27B-DFlash2); the int4 checkpoint is
 [dbirks/Qwen3.8-27B-W4A16-AutoRound](https://huggingface.co/dbirks/Qwen3.8-27B-W4A16-AutoRound).
 This fork adds only the Windows layer.
+
+
+---
+
+## ☕ Support
+
+If this project saved you time, consider [**buying me a coffee**](https://buymeacoffee.com/cybertiron) — it fuels more open-source fixes and tooling. Thank you!
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/cybertiron)
