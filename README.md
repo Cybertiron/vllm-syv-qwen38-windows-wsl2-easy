@@ -39,8 +39,9 @@ OpenAI-compatible API at `http://localhost:18020/v1` (key in `api_key.txt`).
 For a chat window that **remembers your history**, `vllm.cmd webui` runs
 [Open WebUI](https://github.com/open-webui/open-webui) at `http://localhost:3000`
 (no login; the installer sets it up unless you pass `OWUI=0`). Start the server first.
-Optional UI add-ons live in [`openwebui/`](openwebui/): a **live context-usage ring**
-by the model selector (reads vLLM `/tokenize`) and a **"No Thinking" filter** for Qwen3.8.
+Optional UI add-ons (a **live context-usage ring** by the model selector that reads
+vLLM `/tokenize`, and a **"No Thinking" filter** for Qwen3.8) live in a standalone
+repo — 2-command install: **[Cybertiron/openwebui-context-ring](https://github.com/Cybertiron/openwebui-context-ring)**.
 
 ## Why bother (measured on one RTX 3090, WSL2, greedy)
 
